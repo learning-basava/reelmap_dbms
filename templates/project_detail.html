@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% from "_macros.html" import status_badge with context %}
+{% block title %}{{ project.title }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <a class="small muted" href="{{ url_for('projects') }}">← My plans</a>
+    <h1>{{ project.title }}</h1>
+    <div class="row small">
+      <span class="chip">{{ project.niche }}</span><span class="chip">{{ project.format_name }}</span>
+      <span class="chip">{{ project.platform }}</span><span class="chip">For {{ project.target_audience }}</span>
+    </div>
+  </div>
+  <div class="row">
+    <form method="post" action="{{ url_for('project_status', project_id=project.project_id) }}" class="row">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label for="status" class="small muted">Status</label>
+      <select id="status" name="status" style="width:auto" onchange="this.form.submit()">
+        {% for s in statuses %}<option value="{{ s }}" {% if s == project.status %}selected{% endif %}>{{ s | capitalize }}</option>{% endfor %}
+      </select>
+      <noscript><button class="btn sm">Save</button></noscript>
+    </form>
+    <form method="post" action="{{ url_for('project_delete', project_id=project.project_id) }}" data-confirm="Delete this plan with all its ideas and storyboards? This can't be undone.">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn danger sm">Delete plan</button>
+    </form>
+  </div>
+</div>
+
+<section class="stack">
+  <div class="row" style="justify-content:space-between">
+    <h2>Ideas for “{{ project.topic }}”</h2>
+    <div class="row">
+      <form method="post" action="{{ url_for('more_ideas', project_id=project.project_id) }}" data-busy="Adding...">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="source" value="bank">
+        <button class="btn sm">+ 5 more from idea bank</button></form>
+      {% if ai_enabled %}
+      <form method="post" action="{{ url_for('more_ideas', project_id=project.project_id) }}" data-busy="AI is thinking...">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="source" value="ai">
+        <button class="btn dark sm">Ask AI for ideas</button></form>
+      {% else %}
+      <span class="small muted" title="Add GEMINI_API_KEY to turn on AI ideas">AI ideas: off</span>
+      {% endif %}
+    </div>
+  </div>
+  {% if ideas %}
+  <div class="ideas">
+    {% for i in ideas %}
+    <article class="card idea {% if i.is_selected %}picked{% endif %}">
+      <div class="stack" style="gap:8px">
+        <div class="row small">{% if i.source == 'ai' %}<span class="badge ai">AI idea</span>{% else %}<span class="badge">Idea bank</span>{% endif %}
+          {% if i.frame_count %}<span class="badge posted">Storyboard · {{ i.frame_count }} scenes</span>{% endif %}</div>
+        <h3>{{ i.title }}</h3>
+        <p class="hook">“{{ i.hook }}”</p>
+        <p class="muted small">{{ i.description }}</p>
+      </div>
+      <div class="acts">
+        {% if i.frame_count %}
+          <a class="btn primary" href="{{ url_for('storyboard', idea_id=i.idea_id) }}">Open storyboard</a>
+          <a class="btn sm" href="{{ url_for('idea_pdf', idea_id=i.idea_id) }}">PDF</a>
+        {% else %}
+          <form method="post" action="{{ url_for('storyboard', idea_id=i.idea_id) }}" data-busy="Drawing...">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="source" value="bank">
+            <button class="btn primary">Build storyboard</button></form>
+        {% endif %}
+        <form method="post" action="{{ url_for('idea_delete', idea_id=i.idea_id) }}" data-confirm="Remove this idea?">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn ghost sm" aria-label="Remove idea: {{ i.title }}">Remove</button></form>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="card empty"><h3>No ideas left in this plan</h3><p class="muted">Get more from the idea bank{% if ai_enabled %} or ask AI{% endif %}.</p></div>
+  {% endif %}
+</section>
+{% endblock %}

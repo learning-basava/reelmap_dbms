@@ -1,0 +1,215 @@
+"""Starter data for the Reelmap idea bank.
+
+This is the single source for the seed rows. ``init_db.py`` inserts it with
+parameterised queries and can also export it as ``sql/seed.sql``.
+
+Placeholders filled in at generation time:
+    {topic}    the user's topic, as typed   e.g. "home workouts"
+    {Topic}    the same topic, capitalised  e.g. "Home workouts"
+    {audience} the target audience          e.g. "college students"
+    {niche}    the niche name               e.g. "Fitness"
+    {platform} the platform                 e.g. "Instagram Reels"
+    {hook}     the chosen idea's hook (scene templates only)
+    {title}    the chosen idea's title (scene templates only)
+"""
+
+NICHES = [
+    (1, "Food & Cooking", "Recipes, food reviews and kitchen tips."),
+    (2, "Fitness", "Workouts, healthy habits and progress journeys."),
+    (3, "Tech & Gadgets", "Phones, apps, gadgets and how-tos."),
+    (4, "Beauty & Skincare", "Skincare routines, makeup and product reviews."),
+    (5, "Fashion", "Outfits, styling tips and hauls."),
+    (6, "Travel", "Places, budget trips and travel hacks."),
+    (7, "Education & Study", "Study tips, exam prep and learning hacks."),
+    (8, "Personal Finance", "Saving, budgeting and money habits."),
+    (9, "Gaming", "Game reviews, tips and setups."),
+    (10, "Lifestyle", "Routines, home, productivity and everyday life."),
+]
+
+# (format_id, name, style, description, icon_pose, default_duration)
+FORMATS = [
+    (1, "Talking-Head Tips", "on_camera", "You talk straight to the camera and share quick, useful tips.", "talk", 30),
+    (2, "Product Review", "product", "An honest review of one product with pros, cons and a verdict.", "hold_product", 40),
+    (3, "Unboxing", "product", "Open a new product on camera and share first impressions.", "excited", 35),
+    (4, "How-To Tutorial", "faceless", "A step-by-step guide. Works with only your hands or screen.", "point", 45),
+    (5, "Day in My Life", "on_camera", "A short vlog of your day built around your topic.", "walk", 40),
+    (6, "Before & After", "on_camera", "Show a clear transformation from start to finish.", "thumbs_up", 25),
+    (7, "POV Skit", "on_camera", "A short, relatable skit that people want to share.", "shrug", 20),
+    (8, "Myth vs Fact", "on_camera", "Bust common myths with simple facts.", "think", 30),
+]
+
+# (format_id, niche_id or None, title, hook, description, difficulty)
+IDEA_TEMPLATES = [
+    # 1 Talking-Head Tips
+    (1, None, "3 {topic} tips I wish I knew sooner", "Three {topic} tips that would have saved me months.",
+     "Share three practical tips about {topic} for {audience}, one per scene, and end by asking viewers which tip they will try first.", "easy"),
+    (1, None, "The biggest {topic} mistake beginners make", "You're probably making this {topic} mistake right now.",
+     "Name one common mistake in {topic}, explain why it happens and show the simple fix. Keep it friendly, not preachy.", "easy"),
+    (1, None, "{Topic} in 30 seconds", "Here's everything a beginner needs to know about {topic} in 30 seconds.",
+     "A quick crash course on {topic} for {audience}: what it is, why it matters and the first step to start today.", "medium"),
+    (1, None, "What nobody tells you about {topic}", "Nobody talks about this part of {topic}.",
+     "Reveal one honest, lesser-known truth about {topic} from your own experience and what you would do differently.", "medium"),
+    (1, None, "Answering your top {topic} question", "You asked, so here's my honest answer about {topic}.",
+     "Pick the most common question {audience} ask about {topic} and answer it clearly with one example.", "easy"),
+    (1, 3, "Hidden {topic} features you're not using", "You've had this for months and never used these features.",
+     "Show three useful but hidden features of {topic}, each with a quick on-screen demo.", "easy"),
+    (1, 8, "How I save money on {topic}", "This is how I spend less on {topic} every month.",
+     "Share three simple money-saving habits for {topic} that {audience} can copy today.", "easy"),
+
+    # 2 Product Review
+    (2, None, "Honest review: is this {topic} worth it?", "I used this {topic} for a week. Here's the honest truth.",
+     "Review a {topic} product: your first impression, what you liked, what you didn't and who should buy it.", "easy"),
+    (2, None, "{Topic}: 3 things I love and 1 I don't", "Three reasons I love this {topic}, and one big catch.",
+     "A balanced review with three pros and one con, so {audience} can decide quickly.", "easy"),
+    (2, None, "Budget vs premium {topic}", "Is the expensive {topic} really better than the cheap one?",
+     "Compare a budget and a premium option side by side on the three things {audience} care about most.", "medium"),
+    (2, None, "Would I buy this {topic} again?", "One month later, would I still buy this {topic}?",
+     "A long-term review: how the product held up, what changed and a clear yes or no verdict.", "medium"),
+    (2, None, "Don't buy {topic} before watching this", "Watch this before you spend money on {topic}.",
+     "Share the buying checklist you wish you had: what to look for, what to avoid and a fair price range.", "easy"),
+
+    # 3 Unboxing
+    (3, None, "Unboxing my new {topic}", "It finally arrived! Let's unbox this {topic} together.",
+     "Film the full unboxing with close-ups of every item, your honest first reaction and a quick first test.", "easy"),
+    (3, None, "What's inside the {topic} box?", "Guess what's inside before I open it.",
+     "Build suspense with a guess, reveal each item one by one, then rate the packaging and value.", "easy"),
+    (3, None, "{Topic} unboxing and first try", "Unboxing and trying this {topic} for the very first time.",
+     "Unbox, set up and use the product once on camera so {audience} see real first-use results.", "medium"),
+    (3, None, "Small business {topic} order", "I ordered from a small business. Look how they packed it!",
+     "Unbox a small-business order, highlight the little details and tag the shop to support local sellers.", "easy"),
+    (3, None, "Is this viral {topic} worth the hype?", "Everyone is talking about this {topic}. Let's see if it's worth it.",
+     "Unbox a trending product, test its main claim and give it a hype score out of ten.", "medium"),
+
+    # 4 How-To Tutorial
+    (4, None, "How to get started with {topic}", "Here's how to start {topic} in 4 simple steps.",
+     "A beginner-friendly, step-by-step tutorial on {topic} with on-screen text for every step. Hands and screen only, no face needed.", "easy"),
+    (4, None, "The easiest {topic} hack", "This {topic} hack takes less than a minute.",
+     "Show one quick hack for {topic} from start to finish, then the result.", "easy"),
+    (4, None, "{Topic} for {audience}: step by step", "Save this {topic} guide for later.",
+     "A saveable step-by-step guide with clear text overlays, so viewers can follow along without sound.", "medium"),
+    (4, None, "Fix this common {topic} problem", "Struggling with {topic}? Try this fix.",
+     "Show the problem first, then the fix in three steps, then the final result.", "medium"),
+    (4, None, "My {topic} routine in 5 steps", "My simple {topic} routine, step by step.",
+     "Walk through your own routine for {topic} using close-up shots of each step.", "easy"),
+    (4, 1, "{Topic} with only 3 ingredients", "You only need 3 ingredients for this {topic}.",
+     "A quick recipe video for {topic} using three easy ingredients, with each step shown from above.", "easy"),
+    (4, 2, "10-minute {topic} session, no equipment", "No gym? No problem. Try this 10-minute {topic} session.",
+     "Demonstrate four simple moves for {topic} with the time and reps shown on screen.", "medium"),
+
+    # 5 Day in My Life
+    (5, None, "A day in my life: {topic} edition", "Spend a day with me while I focus on {topic}.",
+     "Show your day from morning to night, highlighting the moments where {topic} fits in.", "medium"),
+    (5, None, "A realistic {topic} day", "This is what a realistic {topic} day looks like.",
+     "Keep it honest for {audience}: show the good parts, the boring parts and one small win.", "medium"),
+    (5, None, "My morning routine with {topic}", "My morning routine, built around {topic}.",
+     "A calm morning routine with times on screen and one tip in each scene.", "easy"),
+    (5, None, "One week of {topic}: day 1", "Day 1 of trying {topic} for a whole week.",
+     "Start a series: set your goal, show day one and ask viewers to follow for the next days.", "medium"),
+    (5, None, "Weekend reset with {topic}", "Come with me on my weekend reset.",
+     "A relaxed weekend vlog showing how you plan, prepare for and enjoy {topic}.", "easy"),
+    (5, 7, "How I study {topic} for exams", "This is exactly how I study {topic} before exams.",
+     "Show your real study session for {topic}: set-up, method, breaks and how you test yourself.", "easy"),
+
+    # 6 Before & After
+    (6, None, "{Topic}: before and after", "Wait for the after.",
+     "Show the starting point, a quick montage of the process and the final result side by side.", "easy"),
+    (6, None, "30 days of {topic}: my results", "I tried {topic} for 30 days. Here are my results.",
+     "Share your starting point, what you did each week and the honest results at the end.", "hard"),
+    (6, None, "Transforming my space with {topic}", "This corner was a mess. Watch it change.",
+     "Film the before, speed up the work and reveal the after with a satisfying transition.", "medium"),
+    (6, None, "Beginner vs pro at {topic}", "Beginner me vs pro me at {topic}.",
+     "Act out the beginner version and the improved version to show what changed and why.", "easy"),
+    (6, None, "Small change, big {topic} difference", "One small change made a huge difference.",
+     "Show the result with and without one simple change, so the difference is obvious.", "easy"),
+
+    # 7 POV Skit
+    (7, None, "POV: you just started {topic}", "POV: it's your first day trying {topic}.",
+     "A short, relatable skit about the funny struggles of being a beginner at {topic}.", "easy"),
+    (7, None, "POV: your friend asks for {topic} advice", "POV: your friend asks you about {topic}.",
+     "Act out a quick conversation where you give one useful tip in a funny way.", "easy"),
+    (7, None, "Expectation vs reality: {topic}", "Expectation vs reality of {topic}.",
+     "Split the skit into what people expect and what really happens, then end with a helpful tip.", "medium"),
+    (7, None, "Things {audience} say about {topic}", "Things every one of us says about {topic}.",
+     "A fast skit with three relatable lines, each with a different reaction.", "easy"),
+    (7, None, "When {topic} finally works", "That feeling when {topic} finally works.",
+     "Show the struggle, the breakthrough moment and a big celebration.", "easy"),
+
+    # 8 Myth vs Fact
+    (8, None, "{Topic} myths you still believe", "Stop believing these {topic} myths.",
+     "Bust common myths about {topic}, each with a quick, clear fact.", "easy"),
+    (8, None, "Myth or fact: {topic} edition", "Myth or fact? Let's test what you know about {topic}.",
+     "Say a statement, pause so viewers can guess, then reveal the answer.", "easy"),
+    (8, None, "The truth about {topic}", "Here's the truth about {topic} that most people get wrong.",
+     "Pick one popular belief about {topic}, explain why it is misleading and what to do instead.", "medium"),
+    (8, None, "{Topic} advice I'd ignore", "Please ignore this popular {topic} advice.",
+     "Politely call out one piece of bad advice and give a better alternative.", "medium"),
+    (8, None, "Answering {topic} myths from the comments", "You asked me if this {topic} myth is true.",
+     "Use a viewer comment as the starting point and answer it with a simple fact and an example.", "easy"),
+]
+
+# (format_id, scene_order, shot_type, pose, prop, action, dialogue, on_screen_text, duration_sec)
+SCENE_TEMPLATES = [
+    # 1 Talking-Head Tips (30 s)
+    (1, 1, "close_up", "talk", "none", "Face the camera, smile and say the hook in the first two seconds.", "{hook}", "{title}", 3),
+    (1, 2, "medium", "point", "arrow", "Point to the first tip as it appears on screen.", "Tip one is simple, but most people skip it.", "Tip 1", 5),
+    (1, 3, "medium", "talk", "none", "Explain the second tip, using your hands to show the steps.", "Tip two will save you so much time with {topic}.", "Tip 2", 6),
+    (1, 4, "close_up", "think", "none", "Lean in slightly, as if sharing a secret.", "And tip three is the one nobody talks about.", "Tip 3", 6),
+    (1, 5, "medium", "thumbs_up", "sparkle", "Recap the three tips quickly and give a thumbs up.", "Try just one of these this week and you'll see the difference.", "Save this!", 5),
+    (1, 6, "close_up", "wave", "speech", "Wave and ask a question to start the comments.", "Which tip will you try first? Tell me below.", "Comment your pick", 5),
+
+    # 2 Product Review (40 s)
+    (2, 1, "close_up", "hold_product", "product", "Hold the product next to your face so it is visible right away.", "{hook}", "{title}", 3),
+    (2, 2, "medium", "hold_product", "product", "Show the product from all sides and read out its main claim.", "This promises a lot. Let's see if it delivers.", "The claim", 6),
+    (2, 3, "close_up", "point", "product", "Zoom in on the detail you like most and point at it.", "First thing I love: the quality is better than I expected.", "Pro #1", 7),
+    (2, 4, "medium", "talk", "none", "Explain a second pro while using the product.", "It also fits really well into my {topic} routine.", "Pro #2", 7),
+    (2, 5, "medium", "shrug", "none", "Shrug and share the one downside honestly.", "The catch? It isn't perfect, and here's why.", "The catch", 8),
+    (2, 6, "close_up", "thumbs_up", "product", "Give your verdict with a rating on screen.", "My verdict for {audience}: worth it if you really need it.", "Verdict: 8/10", 9),
+
+    # 3 Unboxing (35 s)
+    (3, 1, "close_up", "excited", "product", "Hold up the sealed box and react with excitement.", "{hook}", "{title}", 3),
+    (3, 2, "medium", "hold_product", "product", "Open the box slowly at a table, with the camera in front.", "Okay, let's open it carefully.", "Unboxing...", 6),
+    (3, 3, "close_up", "hold_product", "product", "Take out each item one by one and show it close to the camera.", "Here's everything that comes in the box.", "What's inside", 7),
+    (3, 4, "medium", "think", "product", "Look at the product closely and give your first impression.", "First impression: it feels better than I thought.", "First look", 6),
+    (3, 5, "medium", "thumbs_up", "sparkle", "Try it once and react to the result.", "Let's try it right now.", "First try", 7),
+    (3, 6, "close_up", "wave", "speech", "Wave and tease a full review.", "Should I do a full review? Let me know.", "Full review?", 6),
+
+    # 4 How-To Tutorial (45 s)
+    (4, 1, "close_up", "point", "sparkle", "Show the final result first, so viewers know what they will get.", "{hook}", "{title}", 4),
+    (4, 2, "medium", "sit_laptop", "laptop", "Set up your workspace and show everything you need.", "Here's what you need to get started.", "You'll need", 7),
+    (4, 3, "close_up", "point", "arrow", "Show step one with a close-up of your hands.", "Step one: start with the basics of {topic}.", "Step 1", 8),
+    (4, 4, "close_up", "point", "arrow", "Show step two and slow down at the tricky part.", "Step two: this is where most people go wrong.", "Step 2", 9),
+    (4, 5, "medium", "thumbs_up", "sparkle", "Finish step three and reveal the result.", "Step three, and you're done!", "Step 3", 9),
+    (4, 6, "close_up", "wave", "speech", "Ask viewers to save the video for later.", "Save this so you can try it later.", "Save for later", 8),
+
+    # 5 Day in My Life (40 s)
+    (5, 1, "wide", "wave", "none", "Start outside or near a window with a quick wave.", "{hook}", "{title}", 3),
+    (5, 2, "medium", "hold_phone", "phone", "Film a quick selfie clip while you share your plan.", "Here's my plan for today.", "7:00 AM", 6),
+    (5, 3, "wide", "walk", "none", "Show yourself on the move to the next part of the day.", "First stop of the day.", "9:00 AM", 7),
+    (5, 4, "medium", "sit_laptop", "laptop", "Show the main part of your day that involves {topic}.", "This is where {topic} fits into my day.", "12:00 PM", 8),
+    (5, 5, "medium", "stand", "cup", "Take a short break with a drink and share one thought.", "Quick break, and a small win to share.", "4:00 PM", 8),
+    (5, 6, "close_up", "talk", "speech", "Wrap up the day facing the camera.", "That was my day. Want a part two?", "Part 2?", 8),
+
+    # 6 Before & After (25 s)
+    (6, 1, "close_up", "talk", "before_after", "Show a split screen with the before and a hidden after.", "{hook}", "{title}", 3),
+    (6, 2, "medium", "shrug", "none", "Show the before honestly.", "This is where I started.", "Before", 5),
+    (6, 3, "medium", "point", "arrow", "Speed up the process and point at what you are changing.", "Here's what I changed.", "The process", 6),
+    (6, 4, "wide", "walk", "sparkle", "Use a quick transition: walk out of the frame and back in.", "And then...", "...", 3),
+    (6, 5, "medium", "excited", "sparkle", "Reveal the after with a big reaction.", "The after! I can't believe the difference.", "After", 4),
+    (6, 6, "close_up", "thumbs_up", "speech", "Ask viewers which version they prefer.", "Before or after? Comment below.", "Which one?", 4),
+
+    # 7 POV Skit (20 s)
+    (7, 1, "close_up", "think", "none", "Look into the camera with a confused face.", "{hook}", "{title}", 3),
+    (7, 2, "medium", "shrug", "none", "Act out the first relatable struggle.", "Wait, is this how it's supposed to work?", "Me:", 4),
+    (7, 3, "medium", "talk", "speech", "Switch to the other character (change your cap or stand on the other side).", "You're overthinking it. Just try this.", "My friend:", 4),
+    (7, 4, "close_up", "think", "none", "React in slow motion as it finally makes sense.", "Ohhh. That actually works.", "...", 3),
+    (7, 5, "medium", "excited", "sparkle", "Celebrate dramatically.", "I'm basically a pro now.", "Me 5 minutes later:", 3),
+    (7, 6, "close_up", "wave", "speech", "Break character and ask viewers to tag a friend.", "Tag the friend who needs this.", "Tag a friend", 3),
+
+    # 8 Myth vs Fact (30 s)
+    (8, 1, "close_up", "talk", "none", "Hold up one finger and introduce the topic.", "{hook}", "{title}", 3),
+    (8, 2, "medium", "shrug", "none", "Say the first myth with a doubtful face.", "Myth one: you need to be an expert to start {topic}.", "MYTH", 5),
+    (8, 3, "medium", "point", "arrow", "Point to the fact as it appears on screen.", "Fact: anyone can start small and improve.", "FACT", 5),
+    (8, 4, "medium", "think", "none", "Introduce myth two as if you used to believe it.", "Myth two: doing more is always better.", "MYTH", 5),
+    (8, 5, "medium", "thumbs_up", "sparkle", "Give the fact with confidence.", "Fact: being consistent beats doing more.", "FACT", 6),
+    (8, 6, "close_up", "wave", "speech", "Ask viewers which myth to bust next.", "What myth should I bust next?", "Your myth?", 6),
+]

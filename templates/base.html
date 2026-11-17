@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Reelmap{% endblock %} · Reelmap</title>
+  <meta name="description" content="Plan short-form video ideas and stick-figure storyboards, then download them as a PDF.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@600;700&display=swap">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to main content</a>
+  <header class="topbar">
+    <div class="topbar-in">
+      <a class="brand" href="{{ url_for('home') }}" aria-label="Reelmap home">
+        <svg viewBox="0 0 28 28" aria-hidden="true"><rect x="6" y="1.5" width="16" height="25" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="14" cy="10" r="3" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M14 13v6M14 15l-3.5 2.5M14 15l3.5 2.5M14 19l-2.5 4M14 19l2.5 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="18.5" cy="5.5" r="1.4" fill="#d9481f"/></svg>
+        Reelmap
+      </a>
+      {% if g.user %}
+      {% set ep = request.endpoint %}
+      <nav class="nav" aria-label="Main">
+        <a href="{{ url_for('dashboard') }}" {% if ep == 'dashboard' %}aria-current="page"{% endif %}>Dashboard</a>
+        <a href="{{ url_for('projects') }}" {% if ep in ('projects', 'project_detail', 'storyboard') %}aria-current="page"{% endif %}>My plans</a>
+        <a href="{{ url_for('new_project') }}" {% if ep == 'new_project' %}aria-current="page"{% endif %}>New plan</a>
+        {% if g.user.role == 'admin' %}<a href="{{ url_for('idea_bank') }}" {% if ep == 'idea_bank' %}aria-current="page"{% endif %}>Idea bank</a>{% endif %}
+      </nav>
+      <div class="who">
+        <span class="muted">{{ g.user.full_name.split()[0] }}</span>
+        <form method="post" action="{{ url_for('logout') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn sm">Log out</button></form>
+      </div>
+      {% else %}
+      <span style="flex:1"></span>
+      <div class="row"><a class="btn ghost" href="{{ url_for('login') }}">Log in</a><a class="btn primary" href="{{ url_for('signup') }}">Sign up free</a></div>
+      {% endif %}
+    </div>
+  </header>
+  <main id="main">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}<div class="flashes" role="status">{% for cat, msg in messages %}<div class="flash {{ cat }}">{{ msg }}</div>{% endfor %}</div>{% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="footer"><span>Reelmap · DBMS mini project · Flask + MySQL</span><span>Plan it. Draw it. Film it.</span></footer>
+  <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+</body>
+</html>

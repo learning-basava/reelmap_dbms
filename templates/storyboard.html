@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% from "_macros.html" import frame, timecode with context %}
+{% block title %}Storyboard: {{ idea.title }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <a class="small muted" href="{{ url_for('project_detail', project_id=project.project_id) }}">← {{ project.title }}</a>
+    <span class="label" style="margin-top:6px">Storyboard · {{ frames|length }} scenes · {{ total }} seconds · {{ project.format_name }}</span>
+    <h1>{{ idea.title }}</h1>
+    <p class="muted">Hook: “{{ idea.hook }}”</p>
+  </div>
+  <div class="row no-print">
+    <a class="btn primary big" href="{{ url_for('idea_pdf', idea_id=idea.idea_id) }}">Download PDF</a>
+    {% if ai_enabled %}
+    <form method="post" data-busy="AI is drawing..." data-confirm="Replace this storyboard with a new one from AI?">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="source" value="ai">
+      <button class="btn dark">Redraw with AI</button></form>
+    {% endif %}
+    <form method="post" data-confirm="Reset this storyboard to the idea-bank version? Your edits will be lost.">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="source" value="bank">
+      <button class="btn">Reset</button></form>
+  </div>
+</div>
+
+<section class="board" aria-label="Storyboard scenes">
+  {% for f in frames %}
+  <article class="card scene" id="frame-{{ f.frame_id }}">
+    {{ frame(f.pose, f.shot_type, f.prop, f.on_screen_text, f.start, f.duration_sec) }}
+    <div class="meta"><b>Scene {{ f.frame_no }}</b><span class="small muted">{{ sf.SHOTS[f.shot_type] }}</span></div>
+    <p class="small">{{ f.action_text }}</p>
+    {% if f.dialogue %}<p class="small say">“{{ f.dialogue }}”</p>{% endif %}
+    <details class="no-print">
+      <summary>Edit scene</summary>
+      <form method="post" action="{{ url_for('frame_update', frame_id=f.frame_id) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="three">
+          <select name="shot_type" aria-label="Shot size">{% for k, v in sf.SHOTS.items() %}<option value="{{ k }}" {% if k == f.shot_type %}selected{% endif %}>{{ v }}</option>{% endfor %}</select>
+          <select name="pose" aria-label="Pose">{% for k, v in sf.POSES.items() %}<option value="{{ k }}" {% if k == f.pose %}selected{% endif %}>{{ v }}</option>{% endfor %}</select>
+          <select name="prop" aria-label="Prop">{% for k, v in sf.PROPS.items() %}<option value="{{ k }}" {% if k == f.prop %}selected{% endif %}>{{ v }}</option>{% endfor %}</select>
+        </div>
+        <div class="field"><label class="small" for="ost{{ f.frame_id }}">On-screen text</label><input id="ost{{ f.frame_id }}" name="on_screen_text" type="text" maxlength="80" value="{{ f.on_screen_text }}"></div>
+        <div class="field"><label class="small" for="act{{ f.frame_id }}">What happens</label><textarea id="act{{ f.frame_id }}" name="action_text" maxlength="250" rows="2">{{ f.action_text }}</textarea></div>
+        <div class="field"><label class="small" for="dia{{ f.frame_id }}">What you say</label><textarea id="dia{{ f.frame_id }}" name="dialogue" maxlength="250" rows="2">{{ f.dialogue }}</textarea></div>
+        <div class="row">
+          <label class="small" for="dur{{ f.frame_id }}">Seconds</label><input id="dur{{ f.frame_id }}" name="duration_sec" type="number" min="1" max="60" value="{{ f.duration_sec }}" style="width:76px">
+          <span style="flex:1"></span>
+          <button class="btn primary sm" name="action" value="save">Save</button>
+          <button class="btn danger sm" name="action" value="delete" formnovalidate>Delete</button>
+        </div>
+      </form>
+    </details>
+  </article>
+  {% endfor %}
+  <form method="post" action="{{ url_for('frame_add', idea_id=idea.idea_id) }}" class="addscene no-print">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn">+ Add a scene</button>
+  </form>
+</section>
+{% endblock %}

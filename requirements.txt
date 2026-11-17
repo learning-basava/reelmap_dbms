@@ -1,0 +1,7 @@
+Flask>=3.0
+PyMySQL>=1.1
+cryptography>=42
+fpdf2>=2.8
+requests>=2.31
+certifi
+gunicorn>=22

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% from "_macros.html" import mini, status_badge with context %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><span class="label">Dashboard</span><h1>Hi {{ g.user.full_name.split()[0] }}, what are we filming next?</h1></div>
+  <a class="btn primary big" href="{{ url_for('new_project') }}">+ New content plan</a>
+</div>
+
+<section class="stats" aria-label="Your numbers">
+  <div class="card stat"><span class="label">Content plans</span><b>{{ stats.projects }}</b></div>
+  <div class="card stat"><span class="label">Ideas saved</span><b>{{ stats.ideas }}</b></div>
+  <div class="card stat"><span class="label">Storyboards</span><b>{{ stats.storyboards }}</b></div>
+  <div class="card stat"><span class="label">PDFs downloaded</span><b>{{ stats.downloads }}</b></div>
+</section>
+
+<section class="card">
+  <div class="pad row" style="justify-content:space-between;padding-bottom:6px">
+    <h2>Recent plans</h2>
+    <div class="row small">{% for s in ['draft','planned','filmed','posted'] %}{{ status_badge(s) }}<span class="muted mono" style="margin-right:6px">{{ by_status.get(s, 0) }}</span>{% endfor %}</div>
+  </div>
+  {% if recent %}
+  <div class="table-wrap"><table>
+    <thead><tr><th>Plan</th><th>Format</th><th class="num">Ideas</th><th>Status</th><th>Updated</th></tr></thead>
+    <tbody>{% for p in recent %}
+      <tr><td><a href="{{ url_for('project_detail', project_id=p.project_id) }}">{{ p.title }}</a><div class="small muted">{{ p.niche }} · {{ p.platform }}</div></td>
+        <td>{{ p.format_name }}</td><td class="num">{{ p.idea_count }}</td><td>{{ status_badge(p.status) }}</td>
+        <td class="small muted mono">{{ p.updated_at.strftime('%d %b, %H:%M') }}</td></tr>
+    {% endfor %}</tbody>
+  </table></div>
+  <div class="pad" style="padding-top:8px"><a class="small" href="{{ url_for('projects') }}">See all plans →</a></div>
+  {% else %}
+  <div class="empty"><div style="width:64px">{{ mini('think') }}</div>
+    <h3>No content plans yet</h3><p class="muted">Start with a topic you know well. You'll have 5 ideas in seconds.</p>
+    <a class="btn primary" href="{{ url_for('new_project') }}">Create your first plan</a></div>
+  {% endif %}
+</section>
+{% endblock %}

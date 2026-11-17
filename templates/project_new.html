@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% from "_macros.html" import mini with context %}
+{% block title %}New content plan{% endblock %}
+{% block content %}
+<div class="page-head"><div><span class="label">New content plan</span><h1>What's your video about?</h1>
+  <p class="muted">Fill in four things and get 5 ready-to-film ideas.</p></div></div>
+
+<form method="post" class="card pad stack" style="gap:22px" data-busy="Finding ideas...">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="grid2">
+    <div class="field"><label for="topic">Topic</label>
+      <input id="topic" name="topic" type="text" required minlength="3" maxlength="60" placeholder="e.g. home workout" value="{{ form.get('topic', '') or '' }}">
+      <span class="hint">A short noun works best, like "home workout" or "budget phone".</span></div>
+    <div class="field"><label for="niche_id">Niche</label>
+      <select id="niche_id" name="niche_id" required>
+        <option value="">Choose a niche</option>
+        {% for n in niches %}<option value="{{ n.niche_id }}" {% if form.get('niche_id', '')|int == n.niche_id %}selected{% endif %}>{{ n.name }}</option>{% endfor %}
+      </select></div>
+  </div>
+
+  <fieldset class="field" style="border:0;padding:0;margin:0">
+    <legend class="flabel" style="margin-bottom:8px">Video style</legend>
+    <div class="fmt-pick">
+      {% for f in formats %}
+      <div style="position:relative">
+        <input type="radio" name="format_id" id="fmt{{ f.format_id }}" value="{{ f.format_id }}" required {% if form.get('format_id', '')|int == f.format_id or (not form.get('format_id', '') and loop.first) %}checked{% endif %}>
+        <label for="fmt{{ f.format_id }}">{{ mini(f.icon_pose) }}<span><b>{{ f.name }}</b><small>{{ f.default_duration }}s · {{ f.style.replace('_', ' ') }}</small></span></label>
+      </div>
+      {% endfor %}
+    </div>
+  </fieldset>
+
+  <div class="grid2">
+    <div class="field"><label for="platform">Platform</label>
+      <select id="platform" name="platform" required>
+        {% for p in platforms %}<option {% if form.get('platform', '') == p %}selected{% endif %}>{{ p }}</option>{% endfor %}
+      </select></div>
+    <div class="field"><label for="target_audience">Who is it for?</label>
+      <input id="target_audience" name="target_audience" type="text" maxlength="120" placeholder="e.g. college students" value="{{ form.get('target_audience', '') or '' }}"></div>
+  </div>
+  <div class="field"><label for="title">Plan name <span class="muted small">(optional)</span></label>
+    <input id="title" name="title" type="text" maxlength="120" placeholder="e.g. October fitness series" value="{{ form.get('title', '') or '' }}"></div>
+  <div class="row"><button class="btn primary big" type="submit">Get 5 ideas</button><span class="busy-note muted small">Picking ideas from the bank...</span></div>
+</form>
+{% endblock %}

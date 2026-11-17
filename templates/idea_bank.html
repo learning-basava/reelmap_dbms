@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Idea bank{% endblock %}
+{% block content %}
+<div class="page-head"><div><span class="label">Admin</span><h1>Idea bank</h1>
+  <p class="muted">The idea templates every plan is built from. Placeholders: {topic}, {Topic}, {audience}, {niche}, {platform}.</p></div></div>
+
+<div class="grid2">
+  <section class="card">
+    <div class="pad" style="padding-bottom:4px"><h2>Templates per format</h2></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Format</th><th class="num">Templates</th><th class="num">Active</th></tr></thead>
+      <tbody>{% for s in summary %}<tr><td>{{ s.name }}</td><td class="num">{{ s.templates }}</td><td class="num">{{ s.active or 0 }}</td></tr>{% endfor %}</tbody>
+    </table></div>
+  </section>
+  <section class="card pad">
+    <h2 style="margin-bottom:12px">Add a template</h2>
+    <form method="post" class="stack">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="add">
+      <div class="row">
+        <select name="format_id" aria-label="Format" required style="flex:1">{% for f in formats %}<option value="{{ f.format_id }}">{{ f.name }}</option>{% endfor %}</select>
+        <select name="niche_id" aria-label="Niche" style="flex:1"><option value="">All niches</option>{% for n in niches %}<option value="{{ n.niche_id }}">{{ n.name }}</option>{% endfor %}</select>
+        <select name="difficulty" aria-label="Difficulty" style="flex:0 0 110px"><option>easy</option><option>medium</option><option>hard</option></select>
+      </div>
+      <input name="title_template" type="text" required maxlength="150" placeholder="Title, e.g. 5 {topic} mistakes to avoid" aria-label="Title template">
+      <input name="hook_template" type="text" required maxlength="200" placeholder="Hook, e.g. Avoid these {topic} mistakes." aria-label="Hook template">
+      <textarea name="description_template" required maxlength="400" rows="2" placeholder="Short plan for the video" aria-label="Description template"></textarea>
+      <button class="btn primary" style="align-self:flex-start">Add template</button>
+    </form>
+  </section>
+</div>
+
+<section class="card">
+  <div class="table-wrap"><table>
+    <thead><tr><th>#</th><th>Template</th><th>Format</th><th>Niche</th><th class="num">Used</th><th>Status</th><th></th></tr></thead>
+    <tbody>{% for t in templates %}
+      <tr {% if not t.is_active %}style="opacity:.55"{% endif %}>
+        <td class="mono small">{{ t.template_id }}</td>
+        <td><b>{{ t.title_template }}</b><div class="small muted">{{ t.hook_template }}</div></td>
+        <td class="small">{{ t.format_name }}</td><td class="small">{{ t.niche_name }}</td><td class="num">{{ t.times_used }}</td>
+        <td><span class="badge {{ 'posted' if t.is_active else 'draft' }}">{{ 'Active' if t.is_active else 'Hidden' }}</span></td>
+        <td><div class="row" style="flex-wrap:nowrap">
+          <form method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="toggle"><input type="hidden" name="template_id" value="{{ t.template_id }}">
+            <button class="btn sm">{{ 'Hide' if t.is_active else 'Show' }}</button></form>
+          <form method="post" data-confirm="Delete this template?"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="delete"><input type="hidden" name="template_id" value="{{ t.template_id }}">
+            <button class="btn danger sm">Delete</button></form></div></td>
+      </tr>
+    {% endfor %}</tbody>
+  </table></div>
+</section>
+{% endblock %}

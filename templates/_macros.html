@@ -1,0 +1,20 @@
+{% macro timecode(start, length) -%}
+{{ '%d:%02d' % (start // 60, start % 60) }}–{{ '%d:%02d' % ((start + length) // 60, (start + length) % 60) }}
+{%- endmacro %}
+
+{% macro frame(pose, shot, prop, text='', start=None, length=None) -%}
+<div class="frame">
+  {{ sf.to_svg(pose, shot, prop) | safe }}
+  {% if text %}<div class="ost">{{ text }}</div>{% endif %}
+  {% if start is not none %}<span class="tc">{{ timecode(start, length) }}</span>{% endif %}
+  <span class="rec" aria-hidden="true"></span>
+</div>
+{%- endmacro %}
+
+{% macro mini(pose, shot='medium', prop='none') -%}
+<span class="mini" aria-hidden="true">{{ sf.to_svg(pose, shot, prop) | safe }}</span>
+{%- endmacro %}
+
+{% macro status_badge(status) -%}
+<span class="badge {{ status }}">{{ status | capitalize }}</span>
+{%- endmacro %}

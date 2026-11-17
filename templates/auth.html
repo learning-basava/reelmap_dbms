@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% from "_macros.html" import mini with context %}
+{% block title %}{{ 'Create account' if mode == 'signup' else 'Log in' }}{% endblock %}
+{% block content %}
+<section class="card pad stack" style="max-width:440px;width:100%;margin:12px auto 0;gap:18px">
+  <div class="row" style="gap:14px">
+    <span style="width:42px">{{ mini('wave' if mode == 'signup' else 'hold_phone', 'medium', 'phone' if mode != 'signup' else 'none') }}</span>
+    <div>
+      <h1 style="font-size:1.5rem">{{ 'Create your account' if mode == 'signup' else 'Welcome back' }}</h1>
+      <p class="muted small">{{ 'Free, and it takes 20 seconds.' if mode == 'signup' else 'Log in to see your content plans.' }}</p>
+    </div>
+  </div>
+  <form method="post" class="stack" autocomplete="on">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    {% if mode == 'signup' %}
+    <div class="field"><label for="full_name">Your name</label><input id="full_name" name="full_name" type="text" required minlength="2" maxlength="80" autocomplete="name" value="{{ request.form.full_name or '' }}"></div>
+    {% endif %}
+    <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" required maxlength="120" autocomplete="email" value="{{ request.form.email or '' }}"></div>
+    <div class="field"><label for="password">Password</label><input id="password" name="password" type="password" required {% if mode == 'signup' %}minlength="8"{% endif %} autocomplete="{{ 'new-password' if mode == 'signup' else 'current-password' }}">
+      {% if mode == 'signup' %}<span class="hint">At least 8 characters.</span>{% endif %}</div>
+    <button class="btn primary big" type="submit">{{ 'Create account' if mode == 'signup' else 'Log in' }}</button>
+  </form>
+  <p class="small muted" style="text-align:center">
+    {% if mode == 'signup' %}Already have an account? <a href="{{ url_for('login') }}">Log in</a>
+    {% else %}New here? <a href="{{ url_for('signup') }}">Create an account</a>{% endif %}
+  </p>
+</section>
+{% endblock %}
